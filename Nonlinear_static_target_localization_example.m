@@ -68,11 +68,13 @@ plot(pt(1), pt(2), 'xr');
 
 plot(pthat_gd(1), pthat_gd(2), 'ob');
 plot(pthat_gn(1), pthat_gn(2), 'or');
-plot(pthat_lm(1), pthat_lm(2), 'ok');
+plot(pthat_lm(1), pthat_lm(2), 'ok' );
 
-plot(pts_gd(1, :), pts_gd(2, :), '-xb');
-plot(pts_gn(1, :), pts_gn(2, :), '-xr');
-plot(pts_lm(1, :), pts_lm(2, :), '-xk');
+Grad = plot(pts_gd(1, :), pts_gd(2, :), '-xb' , 'DisplayName','Gradient Descent');
+Gauss = plot(pts_gn(1, :), pts_gn(2, :), '-xr' , 'DisplayName','Gauss-Newton');
+Leven = plot(pts_lm(1, :), pts_lm(2, :), '-xk' , 'DisplayName','Levenberg–Marquardt');
 
 axis([0, 10, 0, 10]);
 axis equal;
+
+legend([Grad Gauss Leven])
