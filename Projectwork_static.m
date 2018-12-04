@@ -23,7 +23,7 @@ actual_pos = [75, 30, 10]';
 %actual_pos = [45,15,10]';
 %   Initial position guess for validation:
 %   [x0, y0, z0]'
-theta0 = [60,30,10]';
+theta0 = [60 30]';
 %   Maximum number of iterations of the LSQsolve (optional, def 10):
 Imax = 40;
 %    Method to use, one of 'gradient', 'gauss-newton', or
@@ -87,7 +87,7 @@ R = cov(ym1');
 R = kron(eye(N), R);
 
 %   The measurement modelfunction handle (scaled from :
-g = @(p) kron(ones(N,1), [eye(3) (3*p*p' - norm(p).^2*eye(3))/norm(p).^5]*th_estimate);
+g = @(p) kron(ones(N,1), [eye(3) (3*[p; 10]*[p; 10]' - norm([p; 10]).^2*eye(3))/norm([p; 10]).^5]*th_estimate);
 
     %   Change ym1 to suitable form for LSQsolve (3N x 1):
 ym = ym1(:);
@@ -131,22 +131,26 @@ plot(theta0(1), theta0(2), '+k')
 %axis([-60 75, -60, 75]);
 axis equal;
 
-%   Actual Jacobian function handle:
-function G_expanded = G_jacobian_new(p, N, m)
-    A = [4*p(1) 3*p(2) 3*p(3); 3*p(2) -2*p(1) 0; 3*p(3) 0 -2*p(1)];
-    B = [-2*p(2) 3*p(1) 0; 3*p(1) 4*p(2) 3*p(3); 0 3*p(3) -2*p(2)];
+%%
+G = jacobian_symbolic()
+
+function G = jacobian_symbolic()
+    syms p_x p_y p_z m_T_1 m_T_2 m_T_3 real;
     
-    column1 = (A./norm(p)^5 - 5*p(1)*(3*p*p'-norm(p)^2*eye(3))/norm(p)^7)*m;
-    column2 = (B./norm(p)^5 - 5*p(2)*(3*p*p'-norm(p)^2*eye(3))/norm(p)^7)*m;
-    column3 = zeros(3,1);
-    
-    G = [column1 column2 column3];
-    
-    %   Scale the model to be (3N x 2)
-    G_expanded = kron(ones(N,1), G);
+    p = [p_x ; p_y ; p_z];
+    m_T = [m_T_1; m_T_2; m_T_3];
+    y = ((3*p*p' - norm(p).^2*eye(3))/norm(p).^5)*m_T
+    G = jacobian(y, [p_x, p_y]);
     
 end
 
+function G = jacobian_substitute(G, x, th_estimate)
+    p_x = x(1);
+    p_y = x(2);
+    
+    G = subs(G);
+    G = double(G);
+end
 
 %   Testing purposes:
 %G_theta = Jacobian(theta0)
