@@ -1,0 +1,73 @@
+clear
+clc
+
+z = 11;
+[th_estimate R] = calibration();
+R = 0.1*eye(3);
+m = th_estimate(4:6);
+
+Y = load_data('Moving_circle_data_2.txt');       % Measurement data
+N = size(Y,2);
+
+x0 = [20 0 0 pi/2]';
+P0 = diag([1 1 0.1 0.5]);
+
+
+sigma_v = 0.01;
+sigma_alfa = 0.1;
+t_delta = 0.1;
+
+Q = Q_symbolic(sigma_v, sigma_alfa, t_delta);
+F_symbolic = quasi_jacobian_symbolic(t_delta);
+G = jacobian_moving_symbolic();
+
+C = @(alfa) [cos(alfa) -sin(alfa) 0; sin(alfa) cos(alfa) 0; 0 0 1];
+g = @(p, alfa) [eye(3) (3*[p; z][p; z]'-norm([p; z]).^2*eye(3))/norm([p; z]).^5] ...
+        [eye(3) zeros(3); zeros(3) C(alfa)]*th_estimate;
+
+x = x0; P = P0;
+estimates = []; P_values = []; K_values = [];
+for i = 1:N
+    % Prediction
+    F = quasi_jacobian_substitute(F_symbolic, x);
+    x = F*x;
+    P = F*P*F' + Q_substitute(Q, x);
+    
+    G = jacobian_moving_substitute(G, x, m);
+    
+    % Measurement update
+    K = P*G'/(G*P*G' + R);
+    x = x + K*(Y(:,i) - g(x(1:2), x(4)));
+    P = P - K*(G*P*G' + R)*K';
+    
+    P_values = [P_values P];
+    K_values = [K_values K];
+    estimates = [estimates x];
+end
+
+figure()
+hold on
+plot(estimates(1,:), estimates(2,:))
+legend('Estimated')
+
+%%
+figure()
+hold on
+%plot(X(1,:), 'b-')
+plot(estimates(1,:), 'r-')
+title('x-coordinate')
+legend('Estimated')
+
+figure()
+hold on
+%plot(X(2,:), 'b-')
+plot(estimates(2,:), 'r-')
+title('y-coordinate')
+legend('Estimated')
+
+
+%%
+% figure()
+% hold on
+% plot(P_values(2,:), 'r-')
+% title('P_values')
