@@ -1,6 +1,6 @@
 % Project work - static part
 % Aleksi Mäkinen and Joonas Isometsä
-clear
+clear all
 clc
 %   The initial parameters required for the code to work:
 %      
@@ -31,7 +31,7 @@ actual_pos = [30, 0, 10]';
 %actual_pos = [45,15,10]';
 %   Initial position guess for validation:
 %   [x0, y0, z0]'
-theta0 = [60 30]';
+theta0 = [45 30]';
 %   Maximum number of iterations of the LSQsolve (optional, def 10):
 Imax = 40;
 %    Method to use, one of 'gradient', 'gauss-newton', or
@@ -101,7 +101,10 @@ g = @(p) kron(ones(N,1), [eye(3) (3*[p; 10]*[p; 10]' - norm([p; 10]).^2*eye(3))/
 ym = ym1(:);
 
 %   Jacobian function handle
-Jacobian = @(p) G_jacobian_new(p, N, th_estimate(4:6));
+% aleksin vanha ratkasu Jacobian = @(p) G_jacobian_new(p, N, th_estimate(4:6));
+Jacobian = jacobian_symbolic();
+Jacobian = jacobian_substitute(Jacobian, p, th_estimate);
+
 
 %   Finally it's time to estimate the location using given function:
 
@@ -140,14 +143,14 @@ plot(theta0(1), theta0(2), '+k')
 axis equal;
 
 %%
-G = jacobian_symbolic()
+%G = jacobian_symbolic()
 
 function G = jacobian_symbolic()
     syms p_x p_y p_z m_T_1 m_T_2 m_T_3 real;
     
     p = [p_x ; p_y ; p_z];
     m_T = [m_T_1; m_T_2; m_T_3];
-    y = ((3*p*p' - norm(p).^2*eye(3))/norm(p).^5)*m_T
+    y = ((3*p*p' - norm(p).^2*eye(3))/norm(p).^5)*m_T;
     G = jacobian(y, [p_x, p_y]);
     
 end
@@ -155,6 +158,11 @@ end
 function G = jacobian_substitute(G, x, th_estimate)
     p_x = x(1);
     p_y = x(2);
+    p_z = 10;
+    m_T_1 = th_estimate(4);
+    m_T_2 = th_estimate(5);
+    m_T_3 = th_estimate(6);
+    
     
     G = subs(G);
     G = double(G);
