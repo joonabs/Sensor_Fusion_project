@@ -103,7 +103,7 @@ ym = ym1(:);
 %   Jacobian function handle
 % aleksin vanha ratkasu Jacobian = @(p) G_jacobian_new(p, N, th_estimate(4:6));
 Jacobian = jacobian_symbolic();
-Jacobian = jacobian_substitute(Jacobian, p, th_estimate, N);
+Jacobian =  @(p) jacobian_substitute(Jacobian, p, th_estimate, N);
 
 
 %   Finally it's time to estimate the location using given function:
@@ -166,9 +166,11 @@ function G = jacobian_substitute(G, x, th_estimate, N)
     
     G = subs(G);
     G = double(G);
-    %for i = 1:N
-    %    G = [G G];
-    %end 
+    G_stack = []
+    for i = 1:N
+        G_stack = [G_stack ; G];
+    end 
+    G = G_stack
 end
 
 %   Testing purposes:
