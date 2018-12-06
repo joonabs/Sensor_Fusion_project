@@ -112,10 +112,10 @@ Jacobian =  @(p) jacobian_substitute(Jacobian, p, th_estimate, N);
 
 %   Next we can plot the initial guess and the results
 %   First the cost function for the plotting:
-J = @(p) (ym - g(p))'/R*(ym - g(p));
+J = @(p) (ym - g(p))'/R*(ym - g(p)); 
 
 %   Next construct the grid for the plot:
-[pxx, pyy] = meshgrid(-5:1:80, -5:1:80);
+[pxx, pyy] = meshgrid(-50:1:50, -50:1:50);
 
 Js = zeros(size(pxx));
 for i = 1:size(pxx, 1)
@@ -166,11 +166,11 @@ function G = jacobian_substitute(G, x, th_estimate, N)
     
     G = subs(G);
     G = double(G);
-    G_stack = []
+    G_stack = [];
     for i = 1:N
         G_stack = [G_stack ; G];
     end 
-    G = G_stack
+    G = G_stack;
 end
 
 %   Testing purposes:
