@@ -11,8 +11,8 @@ clc
 z = 10;
 
 %   Initialization parameters of spectral density of white noise processes
-siqma_v = 0.01;
-siqma_alfa = 0.001;
+siqma_v = 0.1;
+siqma_alfa = 0.01;
 t_delta = 0.1;
 
 %   Initial guess for the starting point of movement
@@ -22,27 +22,27 @@ p = [30,0,10; 15,25,10; 0,45,10; -30,45,10; -30,0,10; -20,-30,10; 15,-25,10; 0,-
 
 %   Circular movement 1:
 %data_filu_nimi = 'J_A_circular_movement_1.txt';
-%actual_start = [30,0];
-%x0 = [30; 0; 10; pi/2];
+%actual_start = [30,-10];
+%x0 = [30; -5; 10; pi/2];
 %P0 = diag([1 1 0.1 pi/4]);
 %   or
 %   Circular movement 2:
-%data_filu_nimi = 'J_A_circular_movement_2.txt';
-%actual_start = [30,0];
-%x0 = [30; 0; 10; pi/2];
-%P0 = diag([1 1 0.1 pi/4]);
+data_filu_nimi = 'J_A_circular_movement_2.txt';
+actual_start = [30,0];
+x0 = [45; 0; 10; 3*pi/4];
+P0 = diag([1 1 0.1 pi/4]);
 %   or
 %   Circular movement 3:
 %data_filu_nimi = 'J_A_circular_movement_3_with_hand.txt';
-%actual_start = [30,0];
-%x0 = [30; 0; 10; pi/2];
+%actual_start = [30,5];
+%x0 = [60; 0; 10; pi/2];
 %P0 = diag([1 1 0.1 pi/4]);
 
 %   Straightline movement:
-data_filu_nimi = 'J_A_straight_line_movement.txt';
-actual_start = [43,-33];
-x0 = [43, -33, 10, pi]'; %pi/2
-P0 = diag([1 1 0.1 pi/4]);
+%data_filu_nimi = 'J_A_straight_line_movement.txt';
+%actual_start = [43,-33];
+%x0 = [43, -33, 10, -3*pi/4]'; %pi/2
+%P0 = diag([1 1 0.1 pi/4]);
 
 %   First calibrate the model
 %   y               contains measurements used for calibration (used just to see the
@@ -58,7 +58,7 @@ m_T = th_estimate;
 y_data = load_data(data_filu_nimi);
 %   Save the amount of measurement points
 N = size(y_data, 2);
-R = eye(3);
+R = 0.2*eye(3);
 %   Calculate and save symbolic Q, F and G
 Q_sym = Q_symbolic(siqma_v, siqma_alfa, t_delta);
 
@@ -104,28 +104,28 @@ for i = 1:N
     estimate_list(:, i) = x;
     P_estimatelist(:, :, i) = P;
 end
-%%
-clc
+
 % Plots of the results
 
-% Plot the actual start pos:
 figure()
 hold on
+%axis([-50,50, -50, 50])
+%   Plot initial guess:
+plot(x0(1), x0(2), 'b*');
+%   Plot the actual start pos:
 plot(actual_start(1),actual_start(2), 'g*');
+
+%   The route is known for the direct measurement, hence the actual route
+%   can be shown!
 if isequal(data_filu_nimi, 'J_A_straight_line_movement.txt')
 %if data_filu_nimi == 'J_A_straight_line_movement.txt'
      line([actual_start(1),42], [actual_start(2),33], 'Color','red','LineStyle','--')
-     plot(estimate_list(1,:), estimate_list(2,:))
-     legend('Actual start position','Actual path','Estimated movement')
+     plot(estimate_list(1,:), estimate_list(2,:), '-xr')
+     legend('Given start position','Actual start position','Actual path','Estimated movement')
 else
-     plot(estimate_list(1,:), estimate_list(2,:))
-     legend('Actual start position','Estimated movement')
+     plot(estimate_list(1,:), estimate_list(2,:), '-xr')
+     legend('Given start position','Actual start position','Estimated movement')
 end
-
-% Plot the estimates
-
-plot(estimate_list(1,:), estimate_list(2,:))
-legend('Actual start position','Actual path','Estimated movement')
 
 %%
 figure()

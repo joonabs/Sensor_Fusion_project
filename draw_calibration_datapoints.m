@@ -1,4 +1,4 @@
-%   Used to draw measurements
+%   Used to draw calibration measurement points
 clc
 clear all
 close all
@@ -19,7 +19,7 @@ text(0,0,'(0,0)')
 plot(p(1,:), p(2,:), 'rx')
 names = {'1 (30,0,10)';'2 (15,25,10)';'3 (10,45,10)';'4 (-30,45,10)';'5 (-30,0,10)';'6 (-20,30,10)';'7 (15, -25, 10)'}; 
 %names ={'x1';'x2';'x3'}
-title('The measurement points used in calibration')
+title('The measurement points used in calibration (and validation)')
 xlabel('[cm]');
 ylabel('[cm]');
 text(p(1,:),p(2,:),names,'VerticalAlignment', 'top', 'HorizontalAlignment', 'left')
