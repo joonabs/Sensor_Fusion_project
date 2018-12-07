@@ -4,7 +4,7 @@
 
 %   Filenames in the form of 'J_A_static_1'
 
-function [y, G] = calibration(p)
+function th_estimate = calibration(p)
     y = [];
     G = [];
     for i = 1:size(p,2)
