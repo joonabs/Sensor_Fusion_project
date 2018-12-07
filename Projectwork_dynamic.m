@@ -33,16 +33,16 @@ p = [30,0,10; 15,25,10; 0,45,10; -30,45,10; -30,0,10; -20,-30,10; 15,-25,10; 0,-
 %P0 = diag([1 1 0.1 pi/4]);
 %   or
 %   Circular movement 3:
-data_filu_nimi = 'J_A_circular_movement_3_with_hand.txt';
-actual_start = [30,0];
-x0 = [30; 0; 10; pi/2];
-P0 = diag([1 1 0.1 pi/4]);
+%data_filu_nimi = 'J_A_circular_movement_3_with_hand.txt';
+%actual_start = [30,0];
+%x0 = [30; 0; 10; pi/2];
+%P0 = diag([1 1 0.1 pi/4]);
 
 %   Straightline movement:
-%data_filu_nimi = 'J_A_straight_line_movement.txt';
-%actual_start = [43,-33];
-%x0 = [43, -33, 10, pi]'; %pi/2
-%P0 = diag([1 1 0.1 pi/4]);
+data_filu_nimi = 'J_A_straight_line_movement.txt';
+actual_start = [43,-33];
+x0 = [43, -33, 10, pi]'; %pi/2
+P0 = diag([1 1 0.1 pi/4]);
 
 %   First calibrate the model
 %   y               contains measurements used for calibration (used just to see the
@@ -112,9 +112,15 @@ clc
 figure()
 hold on
 plot(actual_start(1),actual_start(2), 'g*');
+if isequal(data_filu_nimi, 'J_A_straight_line_movement.txt')
 %if data_filu_nimi == 'J_A_straight_line_movement.txt'
-%     line([actual_start(1),42], [actual_start(2),33], 'Color','red','LineStyle','--')
-%end
+     line([actual_start(1),42], [actual_start(2),33], 'Color','red','LineStyle','--')
+     plot(estimate_list(1,:), estimate_list(2,:))
+     legend('Actual start position','Actual path','Estimated movement')
+else
+     plot(estimate_list(1,:), estimate_list(2,:))
+     legend('Actual start position','Estimated movement')
+end
 
 % Plot the estimates
 
