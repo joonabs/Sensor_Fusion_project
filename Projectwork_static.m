@@ -21,17 +21,17 @@ p = [30, 0, 10;
     15, -25, 10]';
 %   Measurements to validate the model from measurements-file, at least 2 needed!
 %file21 = 'sensorLog_20181025T140033.txt';
-file21 = 'J_A_static_5.txt';
+file21 = 'J_A_static_4.txt';
 %file21 = 'sensorLog_20181025T133655.txt';
 %   And the actual position (so that the accuracy can be compared in
 %   plot!):
 %actual_pos = [15, 30, 10]';
 % pointti 8 ei ollenkaan käytössä ja estimoidaan pistettä 1
-actual_pos = [-30, 0, 10]';
+actual_pos = [-30, 45 10]';
 %actual_pos = [45,15,10]';
 %   Initial position guess for validation:
 %   [x0, y0, z0]'
-theta0 = [-25, 0]';
+theta0 = [-10, 10]';
 %   Maximum number of iterations of the LSQsolve (optional, def 10):
 Imax = 40;
 %    Method to use, one of 'gradient', 'gauss-newton', or
@@ -115,7 +115,7 @@ Jacobian =  @(p) jacobian_substitute(Jacobian, p, th_estimate, N);
 J = @(p) (ym - g(p))'/R*(ym - g(p)); 
 
 %   Next construct the grid for the plot:
-[pxx, pyy] = meshgrid(-75:1:60, -60:1:60);
+[pxx, pyy] = meshgrid(-50:1:0, 0:1:50);
 
 Js = zeros(size(pxx));
 for i = 1:size(pxx, 1)
